@@ -3,7 +3,23 @@
   "version": "1.2.0",
   "private": true,
   "type": "module",
-  "description": "Slim local-time and date strip below the message composer.",
+  "description": "DeepSeek Harness composer clock with live local time, localized dates, timezone display and click-to-copy timestamps.",
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "composer-clock",
+    "typescript",
+    "timezone",
+    "clipboard"
+  ],
+  "homepage": "https://github.com/fxy0715/dsh-composer-clock#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fxy0715/dsh-composer-clock.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fxy0715/dsh-composer-clock/issues"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "check": "tsc -p tsconfig.json --noEmit"

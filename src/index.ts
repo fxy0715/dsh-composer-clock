@@ -1,2 +1,2 @@
-/** Host half of the composer-clock bundle; the Client module owns the rendering. */
+/** Host half of the dsh-composer-clock bundle; the Client module owns the rendering. */
 export function apply(): void {}

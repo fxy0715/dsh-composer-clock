@@ -1,6 +1,6 @@
 "use strict";
 /// <reference path="./dsh-client.d.ts" />
-/** Client half of the composer-clock bundle.
+/** Client half of the dsh-composer-clock bundle.
  * Registers an interactive local-time strip into the `conversation.composer.dock` slot.
  *
  * IMPORTANT: every declaration lives inside the loader factory. The client plugin
@@ -11,7 +11,7 @@
  * Styles use only `--dsw-alias-*` theme tokens so light/dark themes both work.
  */
 window.__ModuleLoader__.load({
-    id: '@local/composer-clock',
+    id: '@local/dsh-composer-clock',
     factory(require) {
         const React = require('react');
         const NS = 'composerClock';
@@ -136,17 +136,17 @@ window.__ModuleLoader__.load({
             }
             onDone(ok);
         }
-        const STRIP_STYLE_ID = 'composer-clock-style';
+        const STRIP_STYLE_ID = 'dsh-composer-clock-style';
         const STRIP_CSS = [
-            '.composer-clock-strip{display:flex;align-items:center;gap:8px;width:100%;box-sizing:border-box;padding:4px 8px;margin:0;border:1px solid transparent;border-radius:6px;background:transparent;color:var(--dsw-alias-label-secondary);font:inherit;font-size:12px;line-height:1.4;text-align:left;cursor:pointer;user-select:none;}',
-            '.composer-clock-strip:hover{background:var(--dsw-alias-bg-layer-2);}',
-            '.composer-clock-strip:active{background:var(--dsw-alias-bg-layer-1);}',
-            '.composer-clock-strip:focus-visible{outline:2px solid var(--dsw-alias-brand-primary);outline-offset:1px;}',
-            '.composer-clock-dot{width:6px;height:6px;border-radius:50%;background:var(--dsw-alias-brand-primary);flex:none;}',
-            '.composer-clock-time{color:var(--dsw-alias-label-primary);font-weight:600;font-variant-numeric:tabular-nums;}',
-            '.composer-clock-zone{margin-left:auto;color:var(--dsw-alias-state-idle-primary);}',
-            '.composer-clock-hint{color:var(--dsw-alias-state-idle-primary);}',
-            '.composer-clock-copied{color:var(--dsw-alias-state-success-primary);}',
+            '.dsh-composer-clock-strip{display:flex;align-items:center;gap:8px;width:100%;box-sizing:border-box;padding:4px 8px;margin:0;border:1px solid transparent;border-radius:6px;background:transparent;color:var(--dsw-alias-label-secondary);font:inherit;font-size:12px;line-height:1.4;text-align:left;cursor:pointer;user-select:none;}',
+            '.dsh-composer-clock-strip:hover{background:var(--dsw-alias-bg-layer-2);}',
+            '.dsh-composer-clock-strip:active{background:var(--dsw-alias-bg-layer-1);}',
+            '.dsh-composer-clock-strip:focus-visible{outline:2px solid var(--dsw-alias-brand-primary);outline-offset:1px;}',
+            '.dsh-composer-clock-dot{width:6px;height:6px;border-radius:50%;background:var(--dsw-alias-brand-primary);flex:none;}',
+            '.dsh-composer-clock-time{color:var(--dsw-alias-label-primary);font-weight:600;font-variant-numeric:tabular-nums;}',
+            '.dsh-composer-clock-zone{margin-left:auto;color:var(--dsw-alias-state-idle-primary);}',
+            '.dsh-composer-clock-hint{color:var(--dsw-alias-state-idle-primary);}',
+            '.dsh-composer-clock-copied{color:var(--dsw-alias-state-success-primary);}',
         ].join('\n');
         function registerStripStyles() {
             try {
@@ -220,13 +220,13 @@ window.__ModuleLoader__.load({
                 });
             }
             return React.createElement('button', {
-                className: 'composer-clock-strip',
+                className: 'dsh-composer-clock-strip',
                 type: 'button',
                 onClick: copyTimestamp,
                 'aria-label': copyHint,
                 title: copyHint,
-            }, React.createElement('span', { className: 'composer-clock-dot', 'aria-hidden': true }), React.createElement('span', { className: 'composer-clock-time' }, time), React.createElement('span', { 'aria-hidden': true }, '·'), React.createElement('span', null, formatDate(now, tag, zone)), zone ? React.createElement('span', { className: 'composer-clock-zone' }, zone) : null, React.createElement('span', {
-                className: copied ? 'composer-clock-copied' : 'composer-clock-hint',
+            }, React.createElement('span', { className: 'dsh-composer-clock-dot', 'aria-hidden': true }), React.createElement('span', { className: 'dsh-composer-clock-time' }, time), React.createElement('span', { 'aria-hidden': true }, '·'), React.createElement('span', null, formatDate(now, tag, zone)), zone ? React.createElement('span', { className: 'dsh-composer-clock-zone' }, zone) : null, React.createElement('span', {
+                className: copied ? 'dsh-composer-clock-copied' : 'dsh-composer-clock-hint',
                 'aria-live': 'polite',
             }, copied ? translate(ctx, tag, 'copied') : translate(ctx, tag, 'copy')));
         }
@@ -250,7 +250,7 @@ window.__ModuleLoader__.load({
                 own(registerStripStyles());
                 own(ctx.slots.inject('conversation.composer.dock', () => ctx.slots.register({
                     name: 'conversation.composer.dock',
-                    id: 'composer-clock',
+                    id: 'dsh-composer-clock',
                     order: 5,
                     label: () => {
                         try {

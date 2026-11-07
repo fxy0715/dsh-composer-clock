@@ -1,4 +1,4 @@
 - insert:
-    - id: composer-clock
-      name: '@local/composer-clock'
+    - id: dsh-composer-clock
+      name: '@local/dsh-composer-clock'
       config: {}

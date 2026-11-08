@@ -1,7 +1,7 @@
 /// <reference path="./dsh-client.d.ts" />
 
 /** Client half of the dsh-composer-clock bundle.
- * Registers an interactive local-time strip into the `conversation.composer.dock` slot.
+ * Registers a local-time display into the `conversation.composer.dock` slot.
  *
  * IMPORTANT: every declaration lives inside the loader factory. The client plugin
  * loader may concatenate several client modules into one script, so a top-level
@@ -22,16 +22,10 @@ window.__ModuleLoader__.load({
       en: {
         title: 'Local time',
         timezone: 'Timezone',
-        copy: 'Copy',
-        copied: 'Copied ✓',
-        copyHint: 'Click to copy',
       },
       zh: {
         title: '本地时间',
         timezone: '时区',
-        copy: '复制',
-        copied: '已复制 ✓',
-        copyHint: '点击复制',
       },
     };
 
@@ -83,7 +77,7 @@ window.__ModuleLoader__.load({
           formatterCache = {
             tag, zone,
             value: new Intl.DateTimeFormat(tag, {
-              year: 'numeric', month: 'short', day: 'numeric', weekday: 'short',
+              month: 'short', day: 'numeric', weekday: 'short',
               timeZone: zone || undefined,
             }),
           };
@@ -112,48 +106,14 @@ window.__ModuleLoader__.load({
       );
     }
 
-    // Reports the settled outcome through onDone(true|false): the modern
-    // clipboard API is asynchronous, so success is only known once it resolves.
-    function writeClipboard(text: string, onDone: (ok: boolean) => void): void {
-      try {
-        if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
-          navigator.clipboard.writeText(text).then(
-            () => onDone(true),
-            () => onDone(false),
-          );
-          return;
-        }
-      } catch {
-        // Fall through to the legacy path.
-      }
-      let ok = false;
-      try {
-        const area = document.createElement('textarea');
-        area.value = text;
-        area.setAttribute('readonly', '');
-        area.style.position = 'fixed';
-        area.style.opacity = '0';
-        document.body.appendChild(area);
-        area.select();
-        ok = document.execCommand('copy');
-        document.body.removeChild(area);
-      } catch {
-        ok = false;
-      }
-      onDone(ok);
-    }
-
     const STRIP_STYLE_ID = 'dsh-composer-clock-style';
     const STRIP_CSS = [
-      '.dsh-composer-clock-strip{display:flex;align-items:center;gap:8px;width:100%;box-sizing:border-box;padding:4px 8px;margin:0;border:1px solid transparent;border-radius:6px;background:transparent;color:var(--dsw-alias-label-secondary);font:inherit;font-size:12px;line-height:1.4;text-align:left;cursor:pointer;user-select:none;}',
-      '.dsh-composer-clock-strip:hover{background:var(--dsw-alias-bg-layer-2);}',
-      '.dsh-composer-clock-strip:active{background:var(--dsw-alias-bg-layer-1);}',
-      '.dsh-composer-clock-strip:focus-visible{outline:2px solid var(--dsw-alias-brand-primary);outline-offset:1px;}',
+      '[data-composer-dock]:has(.dsh-composer-clock-strip){flex-wrap:wrap;gap:2px 8px;}',
+      '.dsh-composer-clock-strip{display:inline-flex;align-items:center;gap:6px;flex:0 1 auto;min-width:0;max-width:100%;min-height:24px;box-sizing:border-box;padding:2px 6px;margin:0;border:1px solid transparent;border-radius:6px;background:transparent;color:var(--dsw-alias-label-secondary);font:inherit;font-size:12px;line-height:1.4;text-align:left;}',
       '.dsh-composer-clock-dot{width:6px;height:6px;border-radius:50%;background:var(--dsw-alias-brand-primary);flex:none;}',
-      '.dsh-composer-clock-time{color:var(--dsw-alias-label-primary);font-weight:600;font-variant-numeric:tabular-nums;}',
-      '.dsh-composer-clock-zone{margin-left:auto;color:var(--dsw-alias-state-idle-primary);}',
-      '.dsh-composer-clock-hint{color:var(--dsw-alias-state-idle-primary);}',
-      '.dsh-composer-clock-copied{color:var(--dsw-alias-state-success-primary);}',
+      '.dsh-composer-clock-time{flex:none;white-space:nowrap;color:var(--dsw-alias-label-primary);font-weight:600;font-variant-numeric:tabular-nums;}',
+      '.dsh-composer-clock-date{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
+      '.dsh-composer-clock-zone{display:none;}',
     ].join('\n');
 
     function registerStripStyles(): () => void {
@@ -193,63 +153,37 @@ window.__ModuleLoader__.load({
 
     function ClockPanel(ctx: DshClientContext): unknown {
       const [now, setNow] = React.useState<Date>(() => new Date());
-      const [copied, setCopied] = React.useState<boolean>(false);
       const [, setLocaleTick] = React.useState<number>(0);
-      const copiedTimerRef = React.useRef<(() => void) | null>(null);
-      const aliveRef = React.useRef<boolean>(true);
 
       React.useEffect(() => {
-        aliveRef.current = true;
         const stopTimer = ctx.timer.interval(() => setNow(new Date()), 1000);
         const unsubscribe = subscribeLocale(ctx, () => setLocaleTick((n) => n + 1));
         return () => {
-          aliveRef.current = false;
           unsubscribe();
           stopTimer();
-          if (copiedTimerRef.current) {
-            copiedTimerRef.current();
-            copiedTimerRef.current = null;
-          }
         };
       }, []);
 
       const tag = localeTag(ctx);
-      const copyHint = translate(ctx, tag, 'copyHint') + ' ' + formatStamp(now);
       const time =
         pad2(now.getHours()) + ':' + pad2(now.getMinutes()) + ':' + pad2(now.getSeconds());
       const zone = timeZoneName();
 
-      function copyTimestamp(): void {
-        writeClipboard(formatStamp(now), (ok) => {
-          if (!ok || !aliveRef.current) return;
-          setCopied(true);
-          if (copiedTimerRef.current) copiedTimerRef.current();
-          copiedTimerRef.current = ctx.timer.timeout(() => setCopied(false), 1600);
-        });
-      }
+      const detail = formatStamp(now) + (zone ? ' · ' + zone : '');
 
       return React.createElement(
-        'button',
+        'time',
         {
           className: 'dsh-composer-clock-strip',
-          type: 'button',
-          onClick: copyTimestamp,
-          'aria-label': copyHint,
-          title: copyHint,
+          dateTime: now.toISOString(),
+          'aria-label': translate(ctx, tag, 'title') + ' ' + detail,
+          title: detail,
         },
         React.createElement('span', { className: 'dsh-composer-clock-dot', 'aria-hidden': true }),
         React.createElement('span', { className: 'dsh-composer-clock-time' }, time),
         React.createElement('span', { 'aria-hidden': true }, '·'),
-        React.createElement('span', null, formatDate(now, tag, zone)),
+        React.createElement('span', { className: 'dsh-composer-clock-date' }, formatDate(now, tag, zone)),
         zone ? React.createElement('span', { className: 'dsh-composer-clock-zone' }, zone) : null,
-        React.createElement(
-          'span',
-          {
-            className: copied ? 'dsh-composer-clock-copied' : 'dsh-composer-clock-hint',
-            'aria-live': 'polite',
-          },
-          copied ? translate(ctx, tag, 'copied') : translate(ctx, tag, 'copy'),
-        ),
       );
     }
 

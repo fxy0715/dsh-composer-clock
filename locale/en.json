@@ -1,6 +1,6 @@
 {
   "meta": {
     "title": "Composer Clock",
-    "description": "Shows a slim local-time and date strip below the message composer; click to copy the timestamp."
+    "description": "Shows a compact local-time and date display below the message composer, with full time and timezone details on hover."
   }
 }

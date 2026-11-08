@@ -3,14 +3,13 @@
   "version": "1.2.0",
   "private": true,
   "type": "module",
-  "description": "DeepSeek Harness composer clock with live local time, localized dates, timezone display and click-to-copy timestamps.",
+  "description": "A compact DeepSeek Harness composer clock with live local time, localized dates and timezone details.",
   "keywords": [
     "dsh-plugin",
     "deepseek-harness",
     "composer-clock",
     "typescript",
-    "timezone",
-    "clipboard"
+    "timezone"
   ],
   "homepage": "https://github.com/fxy0715/dsh-composer-clock#readme",
   "repository": {
